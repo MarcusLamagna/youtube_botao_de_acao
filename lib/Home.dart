@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:youtube/CustomSearchDelegate.dart';
 import 'package:youtube/telas/Biblioteca.dart';
 import 'package:youtube/telas/EmAlta.dart';
 import 'package:youtube/telas/inicio.dart';
@@ -12,12 +13,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _indiceAtual = 0;
+  //Atributos
+  int _indiceAtual = 0; //Proipriedade
+  String _resultado = ""; //Propriedade
 
   @override
   Widget build(BuildContext context) {
     //Carregando páginas
-    List<Widget> telas = [Inicio(), EmAlta(), Inscricao(), Biblioteca()];
+    List<Widget> telas = [
+      Inicio(_resultado),
+      EmAlta(),
+      Inscricao(),
+      Biblioteca()
+    ];
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.grey),
@@ -29,23 +37,31 @@ class _HomeState extends State<Home> {
         ),
         actions: <Widget>[
           IconButton(
+              onPressed: () async {
+                //Apresentar pesquisa ao clicar na lupa
+                String? res = await showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(),
+                );
+                setState(() {
+                  _resultado = res!;
+                });
+                print("resultado: digitado " + res!);
+              },
+              icon: Icon(Icons.search)),
+
+          /*IconButton(
               onPressed: () {
                 print("acao: videocam");
               },
               icon: Icon(Icons.videocam)),
-          IconButton(
-              onPressed: () {
-                print("acao: Pesquisa");
-              },
-              icon: Icon(Icons.search)),
-          IconButton(
-              onPressed: () {
-                print("acao: Conta");
-              },
-              icon: Icon(Icons.account_circle)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.account_circle)),*/
         ],
       ),
-      body: telas[_indiceAtual],
+      body: Container(
+        padding: EdgeInsets.all(16),
+        child: telas[_indiceAtual],
+      ),
       bottomNavigationBar: BottomNavigationBar(
           currentIndex: _indiceAtual,
           onTap: (indice) {
